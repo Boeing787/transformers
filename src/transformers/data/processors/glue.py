@@ -158,7 +158,7 @@ class OutputMode(Enum):
     classification = "classification"
     regression = "regression"
 
-class ThreadditProcessor(DataProcessor):
+class ThredditProcessor(DataProcessor):
     """Processor for the Reddit analysis project."""
 
     # TODO can we call decode on a numpy arr
@@ -166,8 +166,10 @@ class ThreadditProcessor(DataProcessor):
         return InputExample(
             tensor_dict["idx"].numpy(),
             tensor_dict["parent"].numpy().decode("utf-8"),
-            tensor_dict["child_comments"].numpy().decode("utf-8"),
-            tensor_dict["num_children"].numpy().decode("utf-8"),
+            tendor_dict["child_comment_0"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_1"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_2"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_3"].numpy().decode("utf-8"),
             str(tensor_dict["label"].numpy()),
         )
     
