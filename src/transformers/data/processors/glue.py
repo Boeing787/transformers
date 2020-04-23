@@ -158,6 +158,26 @@ class OutputMode(Enum):
     classification = "classification"
     regression = "regression"
 
+class ThreadditProcessor(DataProcessor):
+    """Processor for the Reddit analysis project."""
+
+    # TODO can we call decode on a numpy arr
+    def get_example_from_tensor_dict(self, tensor_dict):
+        return InputExample(
+            tensor_dict["idx"].numpy(),
+            tensor_dict["parent"].numpy().decode("utf-8"),
+            tensor_dict["child_comments"].numpy().decode("utf-8"),
+            tensor_dict["num_children"].numpy().decode("utf-8"),
+            str(tensor_dict["label"].numpy()),
+        )
+    
+    def get_train_examples(self, data_dir):
+    
+    def get_dev_examples(self, data_dir)
+
+    def get_labels(self):
+
+    def _create_examples(self, lines, set_type):
 
 class MrpcProcessor(DataProcessor):
     """Processor for the MRPC data set (GLUE version)."""
@@ -519,6 +539,7 @@ glue_tasks_num_labels = {
     "qnli": 2,
     "rte": 2,
     "wnli": 2,
+    "threddit" : 4
 }
 
 glue_processors = {
@@ -532,6 +553,7 @@ glue_processors = {
     "qnli": QnliProcessor,
     "rte": RteProcessor,
     "wnli": WnliProcessor,
+    "threddit": ThredditProcessor,
 }
 
 glue_output_modes = {
@@ -545,4 +567,5 @@ glue_output_modes = {
     "qnli": "classification",
     "rte": "classification",
     "wnli": "classification",
+    "threddit": "classification",
 }
