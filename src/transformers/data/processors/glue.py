@@ -22,7 +22,7 @@ from typing import List, Optional, Union
 
 from ...file_utils import is_tf_available
 from ...tokenization_utils import PreTrainedTokenizer
-from .utils import DataProcessor, InputExample, InputFeatures
+from .utils import DataProcessor, InputExample, InputFeatures, ThredditInputExample, TredditInputFeatures
 
 
 if is_tf_available():
@@ -163,9 +163,10 @@ class ThredditProcessor(DataProcessor):
 
     # TODO can we call decode on a numpy arr
     def get_example_from_tensor_dict(self, tensor_dict):
-        return InputExample(
+        return ThredditInputExample(
             tensor_dict["idx"].numpy(),
             tensor_dict["parent"].numpy().decode("utf-8"),
+            tensor_dict["response"].numpy().decode("utf-8"),
             tendor_dict["child_comment_0"].numpy().decode("utf-8"),
             tensor_dict["child_comment_1"].numpy().decode("utf-8"),
             tensor_dict["child_comment_2"].numpy().decode("utf-8"),
@@ -174,12 +175,51 @@ class ThredditProcessor(DataProcessor):
         )
     
     def get_train_examples(self, data_dir):
+        # logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.json")))
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) ##TODO: Figure out if jsonl or json
+        with open(os.path.join(data_dir, "train.jsonl"), "r") as f:
+            return self._create_examples(f.read().splitlines(), "train")
     
-    def get_dev_examples(self, data_dir)
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        with open(os.path.join(data_dir, "val.jsonl"), "r") as f:
+            return self._create_examples(f.read().splitlines(), "val")
 
     def get_labels(self):
+        return ["0", "1", "2", "3"]
 
     def _create_examples(self, lines, set_type):
+        examples = []
+        for (i, line) in enumerate(lines):
+            if i == 0:
+                continue
+            line = loads(line)
+            guid = "%s-%s" % (set_type, i)
+            try:
+                text_a = line["parent"]
+                text_b = line["response"]
+                text_c = line["child_comment_0"]
+                text_d = line["child_comment_1"]
+                text_e = line["child_comment_2"]
+                text_f = line["child_comment_3"]
+                label = line["label"]
+            except IndexError:
+                continue
+            examples.append(
+                ThredditInputExample(
+                    guid=guid,
+                    text_a=text_a,
+                    text_b=text_b,
+                    text_c=text_c,
+                    text_d=text_d,
+                    text_e=text_e,
+                    text_f=text_f,
+                    label=label
+                )
+            )
+        return examples
+
+
 
 class MrpcProcessor(DataProcessor):
     """Processor for the MRPC data set (GLUE version)."""
