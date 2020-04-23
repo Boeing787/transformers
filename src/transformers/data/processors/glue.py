@@ -161,7 +161,6 @@ class OutputMode(Enum):
 class ThredditProcessor(DataProcessor):
     """Processor for the Reddit analysis project."""
 
-    # TODO can we call decode on a numpy arr
     def get_example_from_tensor_dict(self, tensor_dict):
         return ThredditInputExample(
             tensor_dict["idx"].numpy(),
