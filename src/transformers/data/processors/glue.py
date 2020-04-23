@@ -175,8 +175,7 @@ class ThredditProcessor(DataProcessor):
         )
     
     def get_train_examples(self, data_dir):
-        # logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.json")))
-        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) ##TODO: Figure out if jsonl or json
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) 
         with open(os.path.join(data_dir, "train.jsonl"), "r") as f:
             return self._create_examples(f.read().splitlines(), "train")
     
