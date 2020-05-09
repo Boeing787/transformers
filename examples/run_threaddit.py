@@ -48,6 +48,18 @@ class ThredditInputExample(object):
 
         return ", ".join(attributes)
 
+@dataclass(frozen=True)
+class ThredditInputFeatures:
+    """
+    A single set of features of data.
+    Property names are the same names as the corresponding inputs to a model.
+    """
+    
+    example_id: str
+    input_ids: List[List[int]]
+    attention_mask: Optional[List[List[int]]]
+    token_type_ids: Optional[List[List[int]]]
+    label: Optional[int]
 
 class ThredditProcessor(DataProcessor):
     """Processor for the Reddit analysis project."""
