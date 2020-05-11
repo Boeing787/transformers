@@ -157,6 +157,72 @@ class DataProcessor:
         """Gets the list of labels for this data set."""
         raise NotImplementedError()
 
+############################# BEGIN PROCESSOR FOR THREADDIT
+
+class ThredditProcessor(DataProcessor):
+    """Processor for the Reddit analysis project."""
+
+    def get_example_from_tensor_dict(self, tensor_dict):
+        example_id = tensor_dict["idx"].numpy()
+        response = tensor_dict["response"].numpy()
+        parent = tensor_dict["parent"].numpy().decode("utf-8")
+        label = str(tensor_dict["label"].numpy())
+
+        return ThredditInputExample(
+            example_id,
+            response,
+            parent,
+            tendor_dict["child_comment_0"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_1"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_2"].numpy().decode("utf-8"),
+            tensor_dict["child_comment_3"].numpy().decode("utf-8"),
+            label
+        )
+
+    def get_train_examples(self, data_dir):
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) 
+        with open(os.path.join(data_dir, "train.jsonl"), "r") as f:
+            return self._create_examples(f.read().splitlines(), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        with open(os.path.join(data_dir, "val.jsonl"), "r") as f:
+            return self._create_examples(f.read().splitlines(), "val")
+
+    def get_labels(self):
+        return ["0", "1", "2", "3"]
+
+    def _create_examples(self, lines, set_type):
+        examples = []
+        for (i, line) in enumerate(lines):
+            if i == 0:
+                continue
+            line = loads(line)
+            guid = "%s-%s" % (set_type, i)
+            try:
+                response = line["response"]
+                parent = line["parent"]
+                cc0 = line["child_comment_0"]
+                cc1 = line["child_comment_1"]
+                cc2 = line["child_comment_2"]
+                cc3 = line["child_comment_3"]
+                label = line["label"]
+            except IndexError:
+                logger.info("IndexError") 
+                continue
+            examples.append(
+                InputExample(
+                    example_id=guid,
+                    question=response,
+                    contexts=[parent, parent, parent, parent],
+                    endings=[cc0, cc1, cc2, cc3],
+                    label=label
+                )
+            )
+        return examples
+
+############################# END PROCESSOR FOR THREADDIT
+
 
 class RaceProcessor(DataProcessor):
     """Processor for the RACE data set."""
