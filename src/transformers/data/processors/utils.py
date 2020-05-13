@@ -27,65 +27,6 @@ from ...file_utils import is_tf_available, is_torch_available
 logger = logging.getLogger(__name__)
 
 @dataclass
-class ThredditInputExample: 
-    """
-        A single training/text example for the Threddit project
-
-        Use this as opposed to the normal InputExample as we allow for more than just text_a and text_b
-
-    Args:
-        guid: Unique id for the example.
-        text_a: string. parent
-        text_b: string. response
-        text_c: string. child_comment_0
-        text_d: string. child_comment_1
-        text_e: string. child_comment_2
-        text_f: string. child_comment_3
-        label: string. the label
-    """
-
-    guid: str
-    text_a: str
-    text_b: str = None
-    text_c: str = None
-    text_d: str = None
-    text_e: str = None
-    text_f: str = None
-    label: str = None
-
-    def to_json_string(self):
-        """Serializes this instance to a JSON string."""
-        return json.dumps(dataclasses.asdict(self), indent=2) + "\n"
-
-@dataclass(frozen=True)
-class ThredditInputFeatures:
-    """
-    A single set of features of data.
-    Property names are the same names as the corresponding inputs to a model.
-
-    Args:
-        input_ids: Indices of input sequence tokens in the vocabulary.
-        attention_mask: Mask to avoid performing attention on padding token indices.
-            Mask values selected in ``[0, 1]``:
-            Usually  ``1`` for tokens that are NOT MASKED, ``0`` for MASKED (padded) tokens.
-        token_type_ids: (Optional) Segment token indices to indicate first and second
-            portions of the inputs. Only some models use them.
-        label: (Optional) Label corresponding to the input. Int for classification problems,
-            float for regression problems.
-    """
-
-    input_ids: List[int]
-    attention_mask: Optional[List[int]] = None
-    token_type_ids: Optional[List[int]] = None
-    label: Optional[Union[int, float]] = None
-
-    def to_json_string(self):
-        """Serializes this instance to a JSON string."""
-        return json.dumps(dataclasses.asdict(self)) + "\n"
-
-
-
-@dataclass
 class InputExample:
     """
     A single training/test example for simple sequence classification.

@@ -22,7 +22,7 @@ from typing import List, Optional, Union
 
 from ...file_utils import is_tf_available
 from ...tokenization_utils import PreTrainedTokenizer
-from .utils import DataProcessor, InputExample, InputFeatures, ThredditInputExample, TredditInputFeatures
+from .utils import DataProcessor, InputExample, InputFeatures
 
 
 if is_tf_available():
@@ -157,66 +157,6 @@ def _glue_convert_examples_to_features(
 class OutputMode(Enum):
     classification = "classification"
     regression = "regression"
-
-class ThredditProcessor(DataProcessor):
-    """Processor for the Reddit analysis project."""
-
-    def get_example_from_tensor_dict(self, tensor_dict):
-        return ThredditInputExample(
-            tensor_dict["idx"].numpy(),
-            tensor_dict["parent"].numpy().decode("utf-8"),
-            tensor_dict["response"].numpy().decode("utf-8"),
-            tendor_dict["child_comment_0"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_1"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_2"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_3"].numpy().decode("utf-8"),
-            str(tensor_dict["label"].numpy()),
-        )
-    
-    def get_train_examples(self, data_dir):
-        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) 
-        with open(os.path.join(data_dir, "train.jsonl"), "r") as f:
-            return self._create_examples(f.read().splitlines(), "train")
-    
-    def get_dev_examples(self, data_dir):
-        """See base class."""
-        with open(os.path.join(data_dir, "val.jsonl"), "r") as f:
-            return self._create_examples(f.read().splitlines(), "val")
-
-    def get_labels(self):
-        return ["0", "1", "2", "3"]
-
-    def _create_examples(self, lines, set_type):
-        examples = []
-        for (i, line) in enumerate(lines):
-            if i == 0:
-                continue
-            line = loads(line)
-            guid = "%s-%s" % (set_type, i)
-            try:
-                text_a = line["parent"]
-                text_b = line["response"]
-                text_c = line["child_comment_0"]
-                text_d = line["child_comment_1"]
-                text_e = line["child_comment_2"]
-                text_f = line["child_comment_3"]
-                label = line["label"]
-            except IndexError:
-                continue
-            examples.append(
-                ThredditInputExample(
-                    guid=guid,
-                    text_a=text_a,
-                    text_b=text_b,
-                    text_c=text_c,
-                    text_d=text_d,
-                    text_e=text_e,
-                    text_f=text_f,
-                    label=label
-                )
-            )
-        return examples
-
 
 
 class MrpcProcessor(DataProcessor):
@@ -578,9 +518,8 @@ glue_tasks_num_labels = {
     "qqp": 2,
     "qnli": 2,
     "rte": 2,
-    "wnli": 2,
-    "threddit" : 4
-}
+    "wnli": 2
+    }
 
 glue_processors = {
     "cola": ColaProcessor,
@@ -592,8 +531,7 @@ glue_processors = {
     "qqp": QqpProcessor,
     "qnli": QnliProcessor,
     "rte": RteProcessor,
-    "wnli": WnliProcessor,
-    "threddit": ThredditProcessor,
+    "wnli": WnliProcessor
 }
 
 glue_output_modes = {
@@ -606,6 +544,5 @@ glue_output_modes = {
     "qqp": "classification",
     "qnli": "classification",
     "rte": "classification",
-    "wnli": "classification",
-    "threddit": "classification",
-}
+    "wnli": "classification"
+    }
