@@ -162,42 +162,33 @@ class DataProcessor:
 class ThredditProcessor(DataProcessor):
     """Processor for the Reddit analysis project."""
 
-    def get_example_from_tensor_dict(self, tensor_dict):
-        example_id = tensor_dict["idx"].numpy()
-        response = tensor_dict["response"].numpy()
-        parent = tensor_dict["parent"].numpy().decode("utf-8")
-        label = str(tensor_dict["label"].numpy())
-
-        return ThredditInputExample(
-            example_id,
-            response,
-            parent,
-            tendor_dict["child_comment_0"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_1"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_2"].numpy().decode("utf-8"),
-            tensor_dict["child_comment_3"].numpy().decode("utf-8"),
-            label
-        )
-
     def get_train_examples(self, data_dir):
-        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.jsonl"))) 
-        with open(os.path.join(data_dir, "train.jsonl"), "r") as f:
-            return self._create_examples(f.read().splitlines(), "train")
+        """See base class."""
+        logger.info("FUUUUUUUUUUUUUUUCKKKKK")
+        logger.info("LOOKING AT {} train".format(data_dir))
+        return self._create_examples(self._read_json(os.path.join(data_dir, "train.jsonl")), "train")
 
     def get_dev_examples(self, data_dir):
         """See base class."""
-        with open(os.path.join(data_dir, "val.jsonl"), "r") as f:
-            return self._create_examples(f.read().splitlines(), "val")
+        logger.info("FUUUUUUUUUUUUUUUCKKKKK")
+
+        logger.info("LOOKING AT {} dev".format(data_dir))
+        return self._create_examples(self._read_json(os.path.join(data_dir, "val.jsonl")), "val")
 
     def get_labels(self):
         return ["0", "1", "2", "3"]
 
+    def _read_json(self, input_file):
+        with open(input_file, "r", encoding="utf-8") as fin:
+            lines = fin.readlines()
+            return lines
+
     def _create_examples(self, lines, set_type):
         examples = []
         for (i, line) in enumerate(lines):
-            if i == 0:
-                continue
-            line = loads(line)
+            # if i == 0:
+            #     continue
+            line = json.loads(line.strip("\n"))
             guid = "%s-%s" % (set_type, i)
             try:
                 response = line["response"]
