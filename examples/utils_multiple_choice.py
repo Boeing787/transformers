@@ -164,16 +164,18 @@ class ThredditProcessor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
-        logger.info("FUUUUUUUUUUUUUUUCKKKKK")
         logger.info("LOOKING AT {} train".format(data_dir))
         return self._create_examples(self._read_json(os.path.join(data_dir, "train.jsonl")), "train")
 
     def get_dev_examples(self, data_dir):
         """See base class."""
-        logger.info("FUUUUUUUUUUUUUUUCKKKKK")
-
-        logger.info("LOOKING AT {} dev".format(data_dir))
+        logger.info("LOOKING AT {} val".format(data_dir))
         return self._create_examples(self._read_json(os.path.join(data_dir, "val.jsonl")), "val")
+
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        logger.info("LOOKING AT {} test".format(data_dir))
+        return self._create_examples(self._read_json(os.path.join(data_dir, "test.jsonl")), "test")
 
     def get_labels(self):
         return ["0", "1", "2", "3"]
